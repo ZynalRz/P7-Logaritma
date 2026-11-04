@@ -3,261 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kuis Algoritma & Pemrograman</title>
+    <title>Kuis Interaktif - Algoritma & Pemrograman</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Vue.js 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
-        /* CSS Variables untuk warna yang adem */
-        :root {
-            --bg-color: #f4f7f6;
-            --card-bg: #ffffff;
-            --text-main: #334155;
-            --text-muted: #64748b;
-            --primary: #60a5fa;
-            --primary-hover: #3b82f6;
-            --correct-bg: #dcfce7;
-            --correct-border: #22c55e;
-            --wrong-bg: #fee2e2;
-            --wrong-border: #ef4444;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+        /* Sedikit kustomisasi untuk animasi transisi Vue */
+        .fade-enter-active, .fade-leave-active {
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        .fade-enter-from, .fade-leave-to {
+            opacity: 0;
+            transform: translateY(10px);
         }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .quiz-container {
-            background: var(--card-bg);
-            width: 100%;
-            max-width: 700px;
-            border-radius: 20px;
-            box-shadow: var(--shadow);
-            padding: 30px;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        /* Progress Bar */
-        .progress-container {
-            width: 100%;
-            height: 8px;
-            background: #e2e8f0;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: var(--primary);
-            width: 0%;
-            transition: width 0.4s ease;
-            border-radius: 10px;
-        }
-
-        .header-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-muted);
-        }
-
-        /* Question Section */
-        .question-text {
-            font-size: 1.15rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-
-        .options {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .option {
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 15px 20px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-        }
-
-        .option:hover {
-            border-color: var(--primary);
-            background: #f0f9ff;
-        }
-
-        .option.correct {
-            background: var(--correct-bg);
-            border-color: var(--correct-border);
-            color: #166534;
-            font-weight: 600;
-        }
-
-        .option.wrong {
-            background: var(--wrong-bg);
-            border-color: var(--wrong-border);
-            color: #991b1b;
-        }
-
-        .option.disabled {
-            pointer-events: none;
-        }
-
-        /* Explanation Box */
-        .explanation-box {
-            margin-top: 20px;
-            padding: 15px;
-            background: #eff6ff;
-            border-left: 4px solid var(--primary);
-            border-radius: 8px;
-            font-size: 0.95rem;
-            display: none;
-            animation: fadeIn 0.4s ease;
-        }
-
-        .explanation-title {
-            font-weight: 700;
-            color: var(--primary-hover);
-            margin-bottom: 5px;
-        }
-
-        /* Buttons */
-        .btn-next {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 14px 24px;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 25px;
-            width: 100%;
-            display: none;
-            transition: background 0.2s;
-            animation: fadeIn 0.4s ease;
-        }
-
-        .btn-next:hover {
-            background: var(--primary-hover);
-        }
-
-        /* Result Section */
-        .result-section {
-            display: none;
-            text-align: center;
-        }
-
-        .result-section h2 {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            color: var(--primary-hover);
-        }
-
-        .score-display {
-            font-size: 3rem;
-            font-weight: 800;
-            margin: 20px 0;
-        }
-
-        .result-message {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Responsive */
-        @media (max-width: 600px) {
-            .quiz-container {
-                padding: 20px;
-                border-radius: 16px;
-            }
-            .question-text {
-                font-size: 1.05rem;
-            }
-            .option {
-                padding: 12px 15px;
-                font-size: 0.95rem;
-            }
-        }
+        /* Warna background yang adem */
+        body { background-color: #f8fafc; }
     </style>
 </head>
-<body>
+<body class="text-slate-800 font-sans antialiased min-h-screen flex items-center justify-center p-4">
 
-<div class="quiz-container" id="quiz-container">
-    <!-- Progress -->
-    <div class="progress-container">
-        <div class="progress-bar" id="progress-bar"></div>
-    </div>
-    
-    <div class="header-info">
-        <span id="question-counter">Soal 1 dari 30</span>
-        <span id="score-display">Skor: 0</span>
-    </div>
-
-    <!-- Quiz Area -->
-    <div id="quiz-content">
-        <div class="question-text" id="question-text">Memuat soal...</div>
-        <div class="options" id="options-container">
-            <!-- Options will be injected here -->
-        </div>
+<div id="app" class="w-full max-w-3xl">
+    <!-- Card Container -->
+    <div class="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden border border-slate-100">
         
-        <div class="explanation-box" id="explanation-box">
-            <div class="explanation-title">Penjelasan:</div>
-            <div id="explanation-text"></div>
+        <!-- Header & Progress Bar -->
+        <div class="p-6 md:p-8 bg-slate-50/50 border-b border-slate-100">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-sm font-bold text-blue-500 tracking-wider uppercase">Uji Kompetensi</span>
+                <span class="bg-blue-100 text-blue-700 py-1 px-3 rounded-full text-xs font-bold">
+                    Skor: {{ score }}
+                </span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-2.5">
+                <div class="bg-blue-500 h-2.5 rounded-full transition-all duration-500 ease-out" 
+                     :style="{ width: progressPercentage + '%' }"></div>
+            </div>
+            <div class="mt-2 text-right text-xs text-slate-400 font-medium" v-if="!isFinished">
+                Soal {{ currentQuestionIndex + 1 }} dari {{ questions.length }}
+            </div>
         </div>
 
-        <button class="btn-next" id="btn-next">Selanjutnya &rarr;</button>
-    </div>
+        <!-- Main Content -->
+        <div class="p-6 md:p-10">
+            
+            <!-- AREA KUIS -->
+            <transition name="fade" mode="out-in">
+                <div v-if="!isFinished" :key="currentQuestionIndex">
+                    <!-- Pertanyaan -->
+                    <h2 class="text-lg md:text-xl font-semibold leading-relaxed mb-6">
+                        {{ currentQuestion.q }}
+                    </h2>
 
-    <!-- Result Area -->
-    <div class="result-section" id="result-section">
-        <h2>Kuis Selesai! 🎉</h2>
-        <div class="score-display" id="final-score">0 / 30</div>
-        <p class="result-message" id="result-message"></p>
-        <button class="btn-next" style="display: block;" onclick="location.reload()">Ulangi Kuis</button>
+                    <!-- Pilihan Jawaban -->
+                    <div class="space-y-3">
+                        <button v-for="(option, index) in currentQuestion.options" :key="index"
+                                @click="selectAnswer(index)"
+                                :disabled="isAnswered"
+                                class="w-full text-left p-4 rounded-xl border-2 transition-all duration-200 flex items-start group"
+                                :class="getOptionClass(index)">
+                            
+                            <span class="w-6 h-6 flex-shrink-0 flex items-center justify-center rounded-full border mr-3 mt-0.5 text-sm font-bold"
+                                  :class="getOptionLetterClass(index)">
+                                {{ String.fromCharCode(65 + index) }}
+                            </span>
+                            <span class="flex-1">{{ option }}</span>
+                            
+                            <!-- Ikon Ceklis/Silang saat dijawab -->
+                            <svg v-if="isAnswered && index === currentQuestion.answer" class="w-5 h-5 text-green-500 ml-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <svg v-if="isAnswered && selectedAnswer === index && index !== currentQuestion.answer" class="w-5 h-5 text-red-500 ml-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+
+                    <!-- Kotak Penjelasan -->
+                    <transition name="fade">
+                        <div v-if="isAnswered" class="mt-6 p-5 bg-blue-50/50 rounded-xl border-l-4 border-blue-400">
+                            <p class="text-sm font-bold text-blue-600 mb-1">Penjelasan:</p>
+                            <p class="text-sm text-slate-600 leading-relaxed">{{ currentQuestion.exp }}</p>
+                        </div>
+                    </transition>
+
+                    <!-- Tombol Next -->
+                    <transition name="fade">
+                        <button v-if="isAnswered" @click="nextQuestion"
+                                class="mt-8 w-full py-4 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl transition-colors shadow-lg shadow-blue-500/30 flex justify-center items-center">
+                            {{ currentQuestionIndex === questions.length - 1 ? 'Lihat Hasil Evaluasi 🏆' : 'Soal Selanjutnya →' }}
+                        </button>
+                    </transition>
+                </div>
+
+                <!-- AREA HASIL & EVALUASI -->
+                <div v-else class="text-center py-6">
+                    <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-blue-100 mb-6">
+                        <span class="text-4xl">🎯</span>
+                    </div>
+                    
+                    <h1 class="text-3xl font-extrabold mb-2">Kuis Selesai!</h1>
+                    <p class="text-slate-500 mb-8">Skor Akhir Anda:</p>
+                    
+                    <div class="text-6xl font-black text-blue-500 mb-8">
+                        {{ score }} <span class="text-3xl text-slate-300">/ {{ questions.length }}</span>
+                    </div>
+
+                    <!-- Kotak Evaluasi Cerdas -->
+                    <div class="text-left bg-slate-50 p-6 rounded-2xl border border-slate-200 mb-8">
+                        <h3 class="font-bold text-lg mb-3 flex items-center">
+                            <svg class="w-6 h-6 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Evaluasi Belajar
+                        </h3>
+                        <p class="text-slate-600 leading-relaxed mb-4">{{ evaluationMessage }}</p>
+                        
+                        <!-- Rincian Nilai per Kategori -->
+                        <div class="space-y-3 mt-4" v-if="weakestCategories.length > 0">
+                            <p class="text-sm font-semibold text-slate-700">Fokus Belajar Anda Selanjutnya:</p>
+                            <div v-for="cat in weakestCategories" :key="cat.name" class="flex justify-between items-center bg-white p-3 rounded-lg border border-slate-200 text-sm">
+                                <span class="font-medium">{{ cat.name }}</span>
+                                <span class="text-red-500 font-bold bg-red-50 px-2 py-1 rounded">{{ cat.correct }} / {{ cat.total }} Benar</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button @click="restartQuiz" class="w-full py-4 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl transition-colors">
+                        Ulangi Kuis
+                    </button>
+                </div>
+            </transition>
+        </div>
     </div>
 </div>
 
 <script>
-    // Array berisi Bank Soal
-    const questions = [
-        { q: "Algoritma diperkenalkan oleh seorang ilmuwan dari Persia yang menuliskan kitab al jabr w'al muqabala sekitar tahun 825 M. Siapakah nama ilmuwan tersebut?", options: ["Aristoteles", "Napoleon", "Ibnu Musa Al Khawarizmi", "Isaac Newton", "Christoper Columbus"], answer: 2, exp: "Al-Khwarizmi adalah ilmuwan muslim dari Persia yang dijuluki sebagai Bapak Aljabar dan Bapak Algoritma." },
-        { q: "Bentuk informal untuk mendeskripsikan algoritma yang mengikuti struktur bahasa pemrograman tertentu adalah pengertian dari...", options: ["Algoritma", "Flowchart", "Pseudocode", "Profilling", "Debugging"], answer: 2, exp: "Pseudocode adalah deskripsi algoritma dalam bahasa yang mirip dengan bahasa pemrograman, namun lebih mudah dipahami manusia." },
-        { q: "Kumpulan instruksi-instruksi yang diberikan kepada komputer untuk melaksanakan suatu tugas, merupakan pengertian dari...", options: ["Bahasa pemrograman", "Program", "Flowchart", "Pseudocode", "Bahasa Tingkat Tinggi"], answer: 1, exp: "Program adalah kumpulan instruksi yang disusun secara logis dan sistematis untuk dijalankan oleh komputer." },
-        { q: "Dibawah ini yang merupakan Kriteria pemilihan algoritma adalah...", options: ["Jumlah langkah berhingga, berakhir, ada output dan testing", "Ada model data, berakhir, semi algoritma, memiliki kriteria terbaik", "Terstruktur, debugging, jumlah langkah berhingga, ada model", "Ada output, jumlah langkahnya berhingga, berakhir, terstruktur, efektif dan efisien", "Memiliki kriteria terbaik, jumlah langkah berhingga, ada output"], answer: 3, exp: "Kriteria algoritma yang baik harus memenuhi: berakhir (terminasi), terstruktur, memiliki output, langkahnya berhingga, serta efektif dan efisien." },
-        { q: "Tahapan dalam menyelesaikan suatu masalah adalah...", options: ["Masalah – Pseudocode – Flowchart – Program – Eksekusi – Hasil", "Masalah – Algoritma – Flowchart – Program – Eksekusi – Hasil", "Masalah – Model – Algoritma – Eksekusi – Hasil", "Algoritma – Program – Model – Eksekusi - Hasil", "Masalah – Model – Algoritma – Program – Eksekusi – Hasil"], answer: 4, exp: "Tahapan logis adalah memulai dari Masalah, membuat Model, merancang Algoritma, menulis Program, melakukan Eksekusi, lalu mendapatkan Hasil." },
-        { q: "Diberikan Algoritma: Apabila warna kuning maka jadi merah. Apabila warna merah maka jadi hijau, selain warna kuning dan merah maka jadi putih. Jika kondisi input warna adalah hitam, maka warna jadi...", options: ["Ungu", "Putih", "Kuning", "Hijau", "Merah"], answer: 1, exp: "Karena input 'hitam' bukan warna kuning dan bukan warna merah, maka masuk ke kondisi 'selain itu' (else) yang menghasilkan warna putih." },
-        { q: "Diketahui bahwa kantong P kosong, kantong Q berisi 10 buah kelereng dan kantong R berisi 20 Kelereng. Apabila kedua kantong tersebut dibawa dan dikatakan bukan Kantong P yang dibawa, maka jumlah kelereng yang terbawa adalah...", options: ["10", "30", "10 dan 20", "Kosong", "10 atau 20"], answer: 1, exp: "Bukan kantong P berarti yang dibawa adalah kantong Q dan R. Maka 10 + 20 = 30." },
-        { q: "Diberikan algoritma: P=9; P = P+6; Q = P. Berapakah Nilai P dan Q?", options: ["9 dan 15", "15 dan 9", "15 dan 15", "9 dan 0", "15 dan 0"], answer: 2, exp: "P awal = 9. P = 9+6 = 15. Q = P, maka Q = 15. Jadi P=15 dan Q=15." },
+    const { createApp, ref, computed } = Vue;
+
+    createApp({
+        setup() {
+            // Bank Soal dengan tambahan Kategori untuk evaluasi
+            const questions = ref([
+                { q: "Algoritma diperkenalkan oleh seorang ilmuwan dari Persia yang menuliskan kitab al jabr w'al muqabala sekitar tahun 825 M. Siapakah nama ilmuwan tersebut?", options: ["Aristoteles", "Napoleon", "Ibnu Musa Al Khawarizmi", "Isaac Newton", "Christoper Columbus"], answer: 2, category: "Sejarah & Konsep", exp: "Al-Khwarizmi adalah ilmuwan muslim dari Persia yang dijuluki sebagai Bapak Aljabar dan Bapak Algoritma." },
+                { q: "Bentuk informal untuk mendeskripsikan algoritma yang mengikuti struktur bahasa pemrograman tertentu adalah pengertian dari...", options: ["Algoritma", "Flowchart", "Pseudocode", "Profilling", "Debugging"], answer: 2, category: "Sejarah & Konsep", exp: "Pseudocode adalah deskripsi algoritma dalam bahasa yang mirip dengan bahasa pemrograman, namun lebih mudah dipahami manusia." },
+                { q: "Kumpulan instruksi-instruksi yang diberikan kepada komputer untuk melaksanakan suatu tugas, merupakan pengertian dari...", options: ["Bahasa pemrograman", "Program", "Flowchart", "Pseudocode", "Bahasa Tingkat Tinggi"], answer: 1, category: "Sejarah & Konsep", exp: "Program adalah kumpulan instruksi yang disusun secara logis dan sistematis untuk dijalankan oleh komputer." },
+                { q: "Dibawah ini yang merupakan Kriteria pemilihan algoritma adalah...", options: ["Jumlah langkah berhingga, berakhir, ada output dan testing", "Ada model data, berakhir, semi algoritma, memiliki kriteria terbaik", "Terstruktur, debugging, jumlah langkah berhingga, ada model", "Ada output, jumlah langkahnya berhingga, berakhir, terstruktur, efektif dan efisien", "Memiliki kriteria terbaik, jumlah langkah berhingga, ada output"], answer: 3, category: "Sejarah & Konsep", exp: "Kriteria algoritma yang baik harus memenuhi: berakhir (terminasi), terstruktur, memiliki output, langkahnya berhingga, serta efektif dan efisien." },
+                { q: "Tahapan dalam menyelesaikan suatu masalah adalah...", options: ["Masalah – Pseudocode – Flowchart – Program – Eksekusi – Hasil", "Masalah – Algoritma – Flowchart – Program – Eksekusi – Hasil", "Masalah – Model – Algoritma – Eksekusi – Hasil", "Algoritma – Program – Model – Eksekusi - Hasil", "Masalah – Model – Algoritma – Program – Eksekusi – Hasil"], answer: 4, category: "Sejarah & Konsep", exp: "Tahapan logis adalah memulai dari Masalah, membuat Model, merancang Algoritma, menulis Program, melakukan Eksekusi, lalu mendapatkan Hasil." },
+                { q: "Diberikan Algoritma: Apabila warna kuning maka jadi merah. Apabila warna merah maka jadi hijau, selain warna kuning dan merah maka jadi putih. Jika kondisi input warna adalah hitam, maka warna jadi...", options: ["Ungu", "Putih", "Kuning", "Hijau", "Merah"], answer: 1, category: "Logika & Aritmatika", exp: "Karena input 'hitam' bukan warna kuning dan bukan warna merah, maka masuk ke kondisi 'selain itu' (else) yang menghasilkan warna putih." },
+                { q: "Diketahui bahwa kantong P kosong, kantong Q berisi 10 buah kelereng dan kantong R berisi 20 Kelereng. Apabila kedua kantong tersebut dibawa dan dikatakan bukan Kantong P yang dibawa, maka jumlah kelereng yang terbawa adalah...", options: ["10", "30", "10 dan 20", "Kosong", "10 atau 20"], answer: 1, category: "Logika & Aritmatika", exp: "Bukan kantong P berarti yang dibawa adalah kantong Q dan R. Maka 10 + 20 = 30." },
+                { q: "Diberikan algoritma: P=9; P = P+6; Q = P. Berapakah Nilai P dan Q?", options: ["9 dan 15", "15 dan 9", "15 dan 15", "9 dan 0", "15 dan 0"], answer: 2, category: "Logika & Aritmatika", exp: "P awal = 9. P = 9+6 = 15. Q = P, maka Q = 15. Jadi P=15 dan Q=15." },
+                { q: "Diberikan sebuah operasi perbandingan: 100 > 10. Apakah hasil program python tersebut?", options: ["True", "False", "10", "100", "0"], answer: 0, category: "Logika & Aritmatika", exp: "Karena 100 lebih besar dari 10, maka ekspresi perbandingan tersebut bernilai True (Benar)." },
+                { q: "Diberikan sebuah operasi pada operator aritmatika: 15 % 2. Apakah hasil program python tersebut?", options: ["1", "0", "7.5", "0", "7"], answer: 0, category: "Logika & Aritmatika", exp: "Operator % (modulo) menghasilkan sisa bagi. 15 dibagi 2 adalah 7 sisa 1. Maka hasilnya 1." },
+                { q: "Pada Flowchart: jika a=8, b=5, c=10. Apakah nilai d? (Kondisi: a>b, Jika Ya: d=a*b+c, Jika Tidak: d=b*c+a)", options: ["50", "40", "58", "48", "60"], answer: 0, category: "Flowchart", exp: "a(8) > b(5) bernilai Ya (True). Maka jalur yang diambil adalah d = a*b+c = 8*5+10 = 40+10 = 50." },
+                { q: "Berapakah nilai yang tercetak jika nilai yang diinput: Absen 70, Tugas 85, UTS 90, UAS 70? (Rumus: Absen*0.2 + Tugas*0.25 + UTS*0.25 + UAS*0.3)", options: ["78,75", "78,25", "70", "78,95", "80,75"], answer: 0, category: "Flowchart", exp: "Hitungan: (70*0.2) + (85*0.25) + (90*0.25) + (70*0.3) = 14 + 21.25 + 22.5 + 21 = 78.75." },
+                { q: "Pada Flowchart: jika a=6, b=8, c=10. Apakah nilai d? (Kondisi: a>b, Jika Ya: d=a*b+c, Jika Tidak: d=b*c-a)", options: ["58", "56", "34", "75", "74"], answer: 4, category: "Flowchart", exp: "a(6) > b(8) bernilai Tidak (False). Maka jalur yang diambil adalah d = b*c-a = 8*10-6 = 80-6 = 74." },
+                { q: "Berapakah nilai Keliling pada variabel kell yang tercetak jika r yang diinput 10? (Rumus: Kell = 2 * phi * r, phi = 3.14)", options: ["628", "6,28", "62,8", "314", "31,4"], answer: 2, category: "Flowchart", exp: "Kell = 2 * 3.14 * 10 = 6.28 * 10 = 62.8." },
+                { q: "Berapa buahkah yang tercetak jika diinput gross = 10? (Rumus: Buah = gross * 144)", options: ["1440", "140", "14440", "14400", "1400"], answer: 0, category: "Flowchart", exp: "1 gross = 144 buah. Jika 10 gross, maka 10 * 144 = 1440 buah." },
+                { q: "Diberikan Algoritma: if x<5: print ('Lebih Kecil dari 5') elif x== 5: print ('Sama dengan 5') else: print ('Lebih Besar dari 5'). Jika variabel x = 10, maka yang tercetak adalah...", options: ["Lebih Kecil dari 5", "Lebih besar dari 5", "Sama dengan 5", "Lebih kecil atau sama dengan 5", "Lebih besar atau sama dengan 5"], answer: 1, category: "Struktur Kontrol", exp: "x=10 tidak memenuhi x<5 dan x==5, sehingga masuk ke blok else yang mencetak 'Lebih Besar dari 5'." },
+                { q: "Diberikan Algoritma: if x<5: print('Lebih Kecil dari 5') elif x== 5: print('Sama dengan 5') else: print('Lebih Besar dari 5'). Jika variabel x = 5, maka yang tercetak adalah...", options: ["Lebih Kecil dari 5", "Lebih besar dari 5", "Lebih kecil atau sama dengan 5", "Sama dengan 5", "Lebih besar atau sama dengan 5"], answer: 3, category: "Struktur Kontrol", exp: "x=5 tidak memenuhi x<5, namun memenuhi kondisi elif x==5, sehingga mencetak 'Sama dengan 5'." },
+                { q: "Jika total_belanja = 90000, berapakah bayar yang tercetak pada variabel bayar diatas?", options: ["90000", "950000", "105000", "100000", "0"], answer: 0, category: "Struktur Kontrol", exp: "Berdasarkan alur logika umum, jika belanja tidak memenuhi syarat diskon (misal minimal 100.000), maka pembayaran tetap 90000." },
+                { q: "PT. XYZ membayar gaji karyawan berdasarkan golongan: I (90000), II (125000), III (150000). Struktur branching manakah yang tepat?", options: ["If ... else", "If", "If ... else if ... else", "If ... elif ... Else", "nested if"], answer: 3, category: "Struktur Kontrol", exp: "Karena ada lebih dari dua pilihan kondisi yang saling eksklusif (Gol I, II, III), struktur If...elif...else adalah yang paling tepat di Python." },
+                { q: "Flowchart dengan Kondisi1 -> False -> Kondisi2 -> False -> Statement3 adalah bentuk seleksi kondisi dari...", options: ["if", "If … else", "If … elif … else", "case", "nested if"], answer: 2, category: "Flowchart", exp: "Alur bercabang yang mengevaluasi kondisi pertama, lalu kondisi kedua, dan memiliki opsi terakhir adalah struktur If...elif...else." },
+                { q: "Diberikan algoritma: for i in range(2,10,2): print(i). Nilai variabel i yang tercetak adalah...", options: ["2, 4, 6, 8", "2, 4, 6, 8, 10", "2, 4, 6, 8, 10, 12", "0, 2, 4, 6, 8", "0, 2, 4, 6, 8, 10"], answer: 0, category: "Perulangan (Looping)", exp: "range(2, 10, 2) berarti mulai dari 2, berhenti sebelum 10, dengan step (loncatan) 2. Hasilnya: 2, 4, 6, 8." },
+                { q: "Diberikan algoritma: for i in range(0,10,2): print(i+2). Nilai variabel i yang tercetak adalah...", options: ["2, 4, 6, 8", "2, 4, 6, 8, 10", "2, 4, 6, 8, 10, 12", "0, 2, 4, 6, 8", "0, 2, 4, 6, 8, 10"], answer: 1, category: "Perulangan (Looping)", exp: "Loop berjalan untuk i = 0, 2, 4, 6, 8. Karena di-print (i+2), maka outputnya menjadi 2, 4, 6, 8, 10." },
+                { q: "Diberikan algoritma: x=0 while x<9: x = x + 1 print(x). Nilai variabel x yang tercetak adalah...", options: ["1, 2, 3, 4, 5, 6, 7, 8", "0, 1, 2, 3, 4, 5, 6, 8, 9", "0, 1, 2, 3, 4, 5,6, 7, 8, 9", "1, 2, 3, 4, 5, 6, 7, 8, 9, 10", "1, 2, 3, 4, 5, 6,7, 8, 9"], answer: 4, category: "Perulangan (Looping)", exp: "Selama x < 9, x ditambah 1 lalu dicetak. Cetakan dimulai dari 1 hingga kondisi x=9 (loop berhenti). Output: 1 s/d 9." },
+                { q: "Diberikan algoritma: jum=0, x=0. while x<9: x = x + 1; jum = jum + x. print(jum). Nilai variabel jum yang tercetak adalah...", options: ["45", "36", "55", "54", "1, 2, 3, 4, 5, 6, 7, 8, 9"], answer: 0, category: "Perulangan (Looping)", exp: "Ini adalah penjumlahan deret 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9. Hasilnya adalah 45." },
+                { q: "Diberikan algoritma: x=1 while x<10: print(x) x = x + 2. Nilai variabel x yang tercetak adalah...", options: ["1, 3, 5, 7, 9", "1, 3, 5, 7", "3, 5, 7, 9", "2, 4, 6, 8", "2, 4, 6, 8, 10"], answer: 0, category: "Perulangan (Looping)", exp: "x dimulai dari 1, lalu ditambah 2 setiap iterasi (1, 3, 5, 7, 9). Setelah 9, x menjadi 11 dan loop berhenti karena 11 < 10 salah." },
+                { q: "Konsep Menara Hanoi merupakan salah satu dari contoh proses...", options: ["Iteratif", "Transitif", "Rekursif", "Branching", "Sorting"], answer: 2, category: "Rekursif", exp: "Menara Hanoi adalah contoh klasik algoritma rekursif, di mana penyelesaian masalah N piringan memecah masalah menjadi sub-masalah N-1 piringan." },
+                { q: "Suatu Proses yang memanggil dirinya sendiri, disebut proses...", options: ["Iteratif", "Transitif", "Rekursif", "Branching", "Searching"], answer: 2, category: "Rekursif", exp: "Definisi dasar rekursif (recursion) adalah sebuah fungsi atau proses yang memanggil dirinya sendiri." },
+                { q: "Rekursif adalah...", options: ["Suatu prosedur yang dapat dipanggil", "Suatu proses yang bisa memanggil dirinya sendiri", "Suatu proses yang dipanggil melalui suatu prosedur", "Suatu prosedur Looping", "Suatu proses Searching"], answer: 1, category: "Rekursif", exp: "Sama seperti soal sebelumnya, inti dari rekursif adalah memanggil dirinya sendiri." },
+                { q: "Pada Menara Hanoi banyaknya pemindahan untuk N buah piringan ke menara tujuannya adalah...", options: ["2n +1", "2n -1", "2n+1", "2n-1", "2n"], answer: 3, category: "Rekursif", exp: "Rumus matematis untuk jumlah langkah minimum memindahkan N piringan di Menara Hanoi adalah 2^n - 1." },
+                { q: "Untuk menyelesaikan masalah menara Hanoi dengan banyaknya piringan ialah 4 buah, maka diperlukan pemindahan sebanyak...", options: ["19 Kali", "18 Kali", "15 Kali", "16 Kali", "31 Kali"], answer: 2, category: "Rekursif", exp: "Menggunakan rumus 2^n - 1 dengan N=4. Maka 2^4 - 1 = 16 - 1 = 15 kali pemindahan." }
+            ]);
+
+            // State
+            const currentQuestionIndex = ref(0);
+            const selectedAnswer = ref(null);
+            const isAnswered = ref(false);
+            const score = ref(0);
+            const isFinished = ref(false);
+            const userAnswers = ref([]); // Menyimpan riwayat jawaban user
+
+            // Computed
+            const currentQuestion = computed(() => questions.value[currentQuestionIndex.value]);
+            const progressPercentage = computed(() => ((currentQuestionIndex.value) / questions.value.length) * 100);
+
+            // Fungsi an 9", "15 dan 15", "9 dan 0", "15 dan 0"], answer: 2, exp: "P awal = 9. P = 9+6 = 15. Q = P, maka Q = 15. Jadi P=15 dan Q=15." },
         { q: "Diberikan sebuah operasi perbandingan: 100 > 10. Apakah hasil program python tersebut?", options: ["True", "False", "10", "100", "0"], answer: 0, exp: "Karena 100 lebih besar dari 10, maka ekspresi perbandingan tersebut bernilai True (Benar)." },
         { q: "Diberikan sebuah operasi pada operator aritmatika: 15 % 2. Apakah hasil program python tersebut?", options: ["1", "0", "7.5", "0", "7"], answer: 0, exp: "Operator % (modulo) menghasilkan sisa bagi. 15 dibagi 2 adalah 7 sisa 1. Maka hasilnya 1." },
         { q: "Pada Flowchart: jika a=8, b=5, c=10. Apakah nilai d? (Kondisi: a>b, Jika Ya: d=a*b+c, Jika Tidak: d=b*c+a)", options: ["50", "40", "58", "48", "60"], answer: 0, exp: "a(8) > b(5) bernilai Ya (True). Maka jalur yang diambil adalah d = a*b+c = 8*5+10 = 40+10 = 50." },
